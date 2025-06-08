@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "Answers")
 public class Answer {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "int UNSIGNED not null")
     private Long id;
 
@@ -25,8 +26,8 @@ public class Answer {
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
-    @Column(name = "user_id", columnDefinition = "int UNSIGNED not null")
-    private Long userId;
+    @Column(name = "users_id", columnDefinition = "int UNSIGNED not null")
+    private Long usersId;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -39,7 +40,7 @@ public class Answer {
     private Boolean isCorrect = false;
 
     @NotNull
-    @Column(name = "user_answers_point", nullable = false)
-    private Double userAnswersPoint;
+    @Column(name = "users_answers_point", nullable = false)
+    private Double usersAnswersPoint;
 
 }

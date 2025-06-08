@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.service.UserService;
+import com.service.impl.UserService;
 
 @SpringBootApplication
 public class VSLearnApiApp implements CommandLineRunner {
@@ -46,7 +46,7 @@ public class VSLearnApiApp implements CommandLineRunner {
       manager.setUserName("manager");
       manager.setUserPassword("manager");
       manager.setUserEmail("manager@email.com");
-//      manager.setRole(new ArrayList<Role>(Arrays.asList(Role.ROLE_MANAGER)));
+//      manager.setUserRole(new ArrayList<Role>(Arrays.asList(Role.ROLE_MANAGER)));
       userService.signup(manager);
     } catch (Exception e) {
       // Admin user already exists, continue
@@ -58,7 +58,7 @@ public class VSLearnApiApp implements CommandLineRunner {
       learner.setUserName("learner");
       learner.setUserPassword("learner");
       learner.setUserEmail("learner@email.com");
-//      learner.setRole(new ArrayList<Role>(Arrays.asList(Role.ROLE_LEARNER)));
+//      learner.setUserRole(new ArrayList<Role>(Arrays.asList(Role.ROLE_LEARNER)));
       userService.signup(learner);
     } catch (Exception e) {
       // Client user already exists, continue
@@ -70,7 +70,7 @@ public class VSLearnApiApp implements CommandLineRunner {
       contentCreator.setUserName("contentCreator");
       contentCreator.setUserPassword("contentCreator");
       contentCreator.setUserEmail("contentCreator@email.com");
-//      contentCreator.setRole(new ArrayList<Role>(Arrays.asList(Role.ROLE_CONTETN_CREATOR)));
+//      contentCreator.setUserRole(new ArrayList<Role>(Arrays.asList(Role.ROLE_CONTETN_CREATOR)));
       userService.signup(contentCreator);
     } catch (Exception e) {
       // Client user already exists, continue
@@ -78,4 +78,4 @@ public class VSLearnApiApp implements CommandLineRunner {
 
 
   }
-} 
+}

@@ -14,16 +14,18 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
+@Table(name = "Transactions")
 public class Transaction {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "int UNSIGNED not null")
     private Long id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "package_id", nullable = false)
-    private Package packageField;
+    @JoinColumn(name = "ticket_id", nullable = false)
+    private Ticket ticket;
 
     @NotNull
     @Column(name = "start_date", nullable = false)

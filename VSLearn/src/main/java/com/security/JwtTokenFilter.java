@@ -23,21 +23,33 @@ public class JwtTokenFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-    String token = jwtTokenProvider.resolveToken(httpServletRequest);
+  protected void doFilterInternal(HttpServletRequest request,
+                                  HttpServletResponse response,
+                                  FilterChain filterChain)
+          throws ServletException, IOException {
+
+    String path = request.getRequestURI();
+
+    // Bỏ qua filter với các path public
+    if (path.equals("/users/signup") || path.equals("/users/signin")) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
+    String token = jwtTokenProvider.resolveToken(request);
     try {
       if (token != null && jwtTokenProvider.validateToken(token)) {
         Authentication auth = jwtTokenProvider.getAuthentication(token);
         SecurityContextHolder.getContext().setAuthentication(auth);
       }
     } catch (CustomException ex) {
-      //this is very important, since it guarantees the user is not authenticated at all
       SecurityContextHolder.clearContext();
-      httpServletResponse.sendError(ex.getHttpStatus().value(), ex.getMessage());
+      response.sendError(ex.getHttpStatus().value(), ex.getMessage());
       return;
     }
 
-    filterChain.doFilter(httpServletRequest, httpServletResponse);
+    filterChain.doFilter(request, response);
   }
+
 
 }

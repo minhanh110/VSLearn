@@ -17,7 +17,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         
         // Allow all origins
-        config.setAllowedOrigins(Collections.singletonList("*"));
+        config.addAllowedOrigin("*");
         
         // Allow all HTTP methods
         config.addAllowedMethod("*");

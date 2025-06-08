@@ -1,5 +1,4 @@
 package com.security;
-
 import com.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,21 +16,23 @@ public class MyUserDetails implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    final User user = userRepository.findByUsername(username).get();
+    User user = userRepository.findByUserName(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User '" + username + "' not found"));
 
-    if (user == null) {
-      throw new UsernameNotFoundException("User '" + username + "' not found");
-    }
+    // Debug để kiểm tra
+    System.out.println("=== MyUserDetails DEBUG ===");
+    System.out.println("Username: " + user.getUserName());
+    System.out.println("Password: " + user.getUserPassword()); // hoặc getPassword()
+    System.out.println("Role: " + user.getUserRole());
 
-    return org.springframework.security.core.userdetails.User//
-        .withUsername(username)//
-        .password(user.getUserPassword())//
-//        .authorities(user.getRole())
-        .accountExpired(false)//
-        .accountLocked(false)//
-        .credentialsExpired(false)//
-        .disabled(false)//
-        .build();
+    return org.springframework.security.core.userdetails.User
+            .withUsername(user.getUserName())
+            .password(user.getUserPassword()) // Đảm bảo method này đúng
+            .authorities("ROLE_" + user.getUserRole()) // Thêm prefix ROLE_
+            .accountExpired(false)
+            .accountLocked(false)
+            .credentialsExpired(false)
+            .disabled(false)
+            .build();
   }
-
 }

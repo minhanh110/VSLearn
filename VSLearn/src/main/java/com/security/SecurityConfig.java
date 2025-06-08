@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -26,6 +27,8 @@ import java.util.Collections;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
+    private MyUserDetails myUserDetails;
+    @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
@@ -39,33 +42,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .cors().and()
-            .csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .authorizeRequests()
-            .antMatchers("/users/signin").permitAll()
-            .antMatchers("/users/signup").permitAll()
-            .antMatchers("/tokens/**").permitAll()
-            .antMatchers("/ws/**").permitAll()
+                .cors().and()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/users/signin").permitAll()
+                .antMatchers("/users/signup").permitAll()
+                .antMatchers("/tokens/**").permitAll()
+                .antMatchers("/ws/**").permitAll()
                 .antMatchers("/private/**").hasAnyRole("ADMIN","Customer")
-            .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs", "/webjars/**").permitAll()
-            .anyRequest().authenticated();
+                .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs", "/webjars/**").permitAll()
+                .anyRequest().authenticated();
 
         http.addFilterBefore(publicEndpointFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
         // Allow swagger to be accessed without authentication
         web.ignoring()
-           .antMatchers("/v2/api-docs")
-           .antMatchers("/swagger-resources/**")
-           .antMatchers("/swagger-ui.html")
-           .antMatchers("/configuration/**")
-           .antMatchers("/webjars/**")
-           .antMatchers("/public");
+                .antMatchers("/v2/api-docs")
+                .antMatchers("/swagger-resources/**")
+                .antMatchers("/swagger-ui.html")
+                .antMatchers("/configuration/**")
+                .antMatchers("/webjars/**")
+                .antMatchers("/public");
     }
 
     @Bean
@@ -79,6 +82,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(myUserDetails).passwordEncoder(passwordEncoder());
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -86,7 +94,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
